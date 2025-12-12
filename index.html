@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CareConnect Demo (Pure JS)</title>
+
+  <!-- Lucide icons (vanilla) -->
+  <script src="https://unpkg.com/lucide@latest/dist/lucide.min.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app" class="page-root">
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="center-screen card">
+      <div class="branding">
+        <div class="logo-circle"><i data-lucide="activity" class="icon-lg"></i></div>
+        <h1>CareConnect</h1>
+        <p class="muted">Your Instant Bridge to Personalized Care</p>
+      </div>
+
+      <div class="form-vertical">
+        <label>Patient Name</label>
+        <input id="input-name" type="text" placeholder="Enter your full name" />
+
+        <label>Age</label>
+        <input id="input-age" type="number" placeholder="Enter your age" />
+
+        <button id="btn-login" class="btn primary" disabled>Continue</button>
+
+        <div class="tip">
+          <strong>Demo Patients:</strong> Try "Sarah Johnson" or "John Doe" to see existing records, or enter any name for a new patient.
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="app-screen" class="hidden">
+
+      <!-- Header -->
+      <header class="topbar">
+        <div>
+          <h2>CareConnect</h2>
+          <p class="muted small">Your Instant Bridge to Personalized Care</p>
+        </div>
+        <div class="top-actions">
+          <div class="icon-surface"><i data-lucide="activity"></i></div>
+          <button id="btn-logout" class="btn ghost">Logout</button>
+        </div>
+      </header>
+
+      <!-- Steppers -->
+      <section id="steps" class="card steps">
+        <div class="step">
+          <div class="step-circle" data-step="1"><i data-lucide="message-square"></i></div>
+          <div class="step-label">Report</div>
+        </div>
+        <div class="connector" id="conn-1"></div>
+        <div class="step">
+          <div class="step-circle" data-step="2"><i data-lucide="activity"></i></div>
+          <div class="step-label">Analyze</div>
+        </div>
+        <div class="connector" id="conn-2"></div>
+        <div class="step">
+          <div class="step-circle" data-step="3"><i data-lucide="calendar"></i></div>
+          <div class="step-label">Connect</div>
+        </div>
+      </section>
+
+      <main class="container">
+        <!-- Left column: Profile & Reports -->
+        <aside class="card profile-col">
+          <div class="profile-head">
+            <div class="avatar"><i data-lucide="user"></i></div>
+            <div class="profile-meta">
+              <div id="patient-name" class="name">Guest</div>
+              <div id="patient-info" class="muted small">Age: — | Last Visit: —</div>
+            </div>
+            <button id="btn-add-report-toggle" class="btn small primary-ghost">
+              <i data-lucide="plus"></i> Add Report
+            </button>
+          </div>
+
+          <!-- Add report area -->
+          <div id="report-entry" class="hidden report-entry">
+            <h4>Add New Medical Report</h4>
+            <label>Date</label>
+            <input id="report-date" type="date" />
+            <label>Diagnosis</label>
+            <input id="report-diagnosis" type="text" placeholder="e.g., Type 2 Diabetes" />
+            <label>Prescription</label>
+            <input id="report-prescription" type="text" placeholder="e.g., Metformin 500mg" />
+            <label>Notes</label>
+            <input id="report-notes" type="text" placeholder="Additional notes" />
+            <div class="row gap">
+              <button id="btn-save-report" class="btn primary">Save Report</button>
+              <button id="btn-cancel-report" class="btn ghost">Cancel</button>
+            </div>
+          </div>
+
+          <!-- Medical history -->
+          <div class="history">
+            <div class="history-head">
+              <i data-lucide="history"></i>
+              <h4>Medical History</h4>
+            </div>
+            <div id="reports-list" class="reports-list">
+              <!-- JS injects reports here -->
+            </div>
+          </div>
+        </aside>
+
+        <!-- Right column: Interaction -->
+        <section class="card main-col">
+
+          <!-- Step 1: Report -->
+          <div id="step-1" class="step-panel">
+            <h3>Step 1: Report Your Symptoms</h3>
+            <p class="muted">Describe how you're feeling. You can type or use voice input.</p>
+
+            <label>Describe your symptoms:</label>
+            <textarea id="input-symptoms" placeholder="E.g., increased thirst, low energy..."></textarea>
+
+            <div class="row gap">
+              <button id="btn-submit-symptoms" class="btn primary" disabled>Submit Symptoms</button>
+              <button id="btn-voice" class="btn ghost"><i data-lucide="phone"></i> Voice Input</button>
+            </div>
+
+            <div class="notice">
+              <strong>Privacy Notice:</strong> Your health information is encrypted and HIPAA-compliant. Only authorized healthcare providers will have access.
+            </div>
+          </div>
+
+          <!-- Step 2: Analyze -->
+          <div id="step-2" class="step-panel hidden">
+            <h3>Step 2: AI Analysis in Progress</h3>
+            <p class="muted">Analyzing your symptoms with historical health records...</p>
+
+            <div id="analysis-spinner" class="analyze-spinner hidden">
+              <div class="spinner"></div>
+              <p>Analyzing symptoms... Comparing with your medical history</p>
+            </div>
+
+            <div id="analysis-result" class="analysis-result hidden">
+              <div id="severity-box" class="severity-box">
+                <div class="severity-icon"><i data-lucide="alert-circle"></i></div>
+                <div>
+                  <h4 id="severity-title">Severity: Low</h4>
+                  <p id="severity-urgency" class="muted">Low Priority</p>
+                </div>
+              </div>
+
+              <div class="grid two">
+                <div class="panel">
+                  <h4><i data-lucide="file-text"></i> Analysis Results</h4>
+                  <p id="analysis-recommendation">General practitioner consultation recommended</p>
+                  <p class="muted"><strong>Matched Specialist:</strong><br /><span id="matched-specialist">Dr. Michael Smith - General Practitioner</span></p>
+                </div>
+                <div class="panel">
+                  <h4><i data-lucide="alert-circle"></i> Risk Factors Identified</h4>
+                  <ul id="risk-factors" class="risk-list"></ul>
+                </div>
+              </div>
+
+              <button id="btn-book-appointment" class="btn primary full">Book Appointment Now</button>
+            </div>
+          </div>
+
+          <!-- Step 3: Appointment -->
+          <div id="step-3" class="step-panel hidden">
+            <h3>Step 3: Appointment Confirmed!</h3>
+            <p class="muted">Your appointment has been successfully scheduled</p>
+
+            <div id="booking-spinner" class="analyze-spinner hidden">
+              <div class="spinner"></div>
+              <p>Booking appointment...</p>
+            </div>
+
+            <div id="booking-result" class="booking-result hidden">
+              <div class="confirm-box">
+                <i data-lucide="check-circle" class="big-check"></i>
+                <div>
+                  <h3>Confirmed!</h3>
+                  <p class="muted">Confirmation Code: <span id="confirm-code"></span></p>
+                </div>
+              </div>
+
+              <div class="grid two">
+                <div class="panel">
+                  <div class="row gap">
+                    <i data-lucide="user"></i>
+                    <div>
+                      <p class="muted">Doctor</p>
+                      <p id="book-doctor" class="bold"></p>
+                      <p id="book-specialty" class="muted small"></p>
+                    </div>
+                  </div>
+
+                  <div class="row gap">
+                    <i data-lucide="calendar"></i>
+                    <div>
+                      <p class="muted">Date & Time</p>
+                      <p id="book-date" class="bold"></p>
+                      <p id="book-time" class="muted small"></p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="panel">
+                  <div class="row gap">
+                    <i data-lucide="activity"></i>
+                    <div>
+                      <p class="muted">Location</p>
+                      <p id="book-location" class="bold"></p>
+                    </div>
+                  </div>
+
+                  <div class="row gap">
+                    <i data-lucide="clock"></i>
+                    <div>
+                      <p class="muted">Preparation</p>
+                      <p class="muted small">Please arrive 15 minutes early. Bring your insurance card and ID.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <button id="btn-reset" class="btn primary full">Start New Session</button>
+              </div>
+
+              <div class="info-note muted">Pre-Consultation: Your symptoms and medical history have been shared with the doctor for review before your appointment.</div>
+            </div>
+          </div>
+
+        </section>
+      </main>
+
+      <!-- Footer -->
+      <footer class="footer card">
+        <div class="muted"><strong>CareConnect Demo</strong> - Building a Healthier Future Together</div>
+        <div class="muted small">Integrating real-time symptom reporting, historical records, and emergency appointments</div>
+      </footer>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    // render lucide icons after DOM
+    lucide.createIcons();
+  </script>
+</body>
+</html>
