@@ -1,6 +1,6 @@
 # CareConnect
 # 🏥 CareConnect - AI-Powered Healthcare Platform
-https://1730edac-16bf-4a13-a268-036501125ecd-00-s05ixib81y6m.riker.replit.dev/ (prototype app link)
+PROTOTYPE LINK:https://jivesh81.github.io/CareConnect/
 
 
 
